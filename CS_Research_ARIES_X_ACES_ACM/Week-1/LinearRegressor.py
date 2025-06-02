@@ -17,8 +17,9 @@ def linearRegression(X: np.array, Y: np.array, lr: float, lambda_: float, conver
     # add a column of ones to X for the bias term, so we can treat it as a weight
     x = np.hstack((np.ones((X.shape[0], 1)), X))  # Add bias term
 
-    # I track the last MSE so that the model stops after mse doesn't change significantly
-    last_mse = -1
+    # I track the losses so that the model stops after mse doesn't change significantly
+    # Also I can make neat diagrams later :)
+    losses = []
     while True:
         pred = x @ weights
         mse = np.mean((pred - Y) ** 2)
@@ -31,9 +32,10 @@ def linearRegression(X: np.array, Y: np.array, lr: float, lambda_: float, conver
         weights -= lr * grad
         # print(mse)
 
-        if np.abs(mse - last_mse) < convergence_threshold and last_mse != -1:
+        if len(losses) > 0 and np.abs(mse - losses[-1]) < convergence_threshold:
             break
-        last_mse = mse
+        losses.append(mse)
+    return weights
 
 if __name__ == '__main__':
     X = np.loadtxt('X.npy')
